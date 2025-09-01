@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+      background: #f0f0f0;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background-color: white;
+      border: 2px solid #333;
+      font-size: 2.5em;
+      text-align: center;
+      line-height: 100px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .cell:hover {
+      background-color: #f2f2f2;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    #restart {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tic Tac Toe</h1>
+  <div id="board"></div>
+  <div id="status">Giliran: X</div>
+  <button id="restart">Main Ulang</button>
+
+  <script>
+    const boardElement = document.getElementById("board");
+    const statusElement = document.getElementById("status");
+    const restartButton = document.getElementById("restart");
+
+    let currentPlayer = "X";
+    let board = Array(9).fill("");
+    let gameOver = false;
+
+    const winningCombos = [
+      [0,1,2], [3,4,5], [6,7,8], // baris
+      [0,3,6], [1,4,7], [2,5,8], // kolom
+      [0,4,8], [2,4,6]           // diagonal
+    ];
+
+    function drawBoard() {
+      boardElement.innerHTML = "";
+      board.forEach((cell, index) => {
+        const cellElement = document.createElement("div");
+        cellElement.classList.add("cell");
+        cellElement.textContent = cell;
+        cellElement.addEventListener("click", () => handleMove(index));
+        boardElement.appendChild(cellElement);
+      });
+    }
+
+    function handleMove(index) {
+      if (board[index] !== "" || gameOver) return;
+      board[index] = currentPlayer;
+      drawBoard();
+      if (checkWinner(currentPlayer)) {
+        statusElement.textContent = `🎉 Pemenang: ${currentPlayer}`;
+        gameOver = true;
+      } else if (board.every(cell => cell !== "")) {
+        statusElement.textContent = "🤝 Hasil: Seri!";
+        gameOver = true;
+      } else {
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        statusElement.textContent = `Giliran: ${currentPlayer}`;
+      }
+    }
+
+    function checkWinner(player) {
+      return winningCombos.some(combo =>
+        combo.every(index => board[index] === player)
+      );
+    }
+
+    function restartGame() {
+      board = Array(9).fill("");
+      currentPlayer = "X";
+      gameOver = false;
+      statusElement.textContent = "Giliran: X";
+      drawBoard();
+    }
+
+    restartButton.addEventListener("click", restartGame);
+
+    // Inisialisasi game
+    drawBoard();
+  </script>
+
+</body>
+</html>
